@@ -5,6 +5,8 @@ Check out the latest release to download
 
 If you want me to build on this donate eth or similar here: 0xB01b6328F8Be53c852a54432bbEe630cE0Bd559a
 
+Thanks to https://github.com/akatrevorjay/edid-generator for the hi-res EDID.
+
 # Indirect Display Driver Sample #
 
 This is a sample driver that shows how to create a Windows Indirect Display Driver using the IddCx class extension driver.
