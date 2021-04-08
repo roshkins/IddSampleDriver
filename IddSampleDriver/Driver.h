@@ -84,6 +84,8 @@ namespace Microsoft
             void InitAdapter();
             void FinishInit();
 
+            void CreateMonitor(unsigned int index);
+
             void AssignSwapChain(IDDCX_SWAPCHAIN SwapChain, LUID RenderAdapter, HANDLE NewFrameEvent);
             void UnassignSwapChain();
 
@@ -92,6 +94,7 @@ namespace Microsoft
             WDFDEVICE m_WdfDevice;
             IDDCX_ADAPTER m_Adapter;
             IDDCX_MONITOR m_Monitor;
+            IDDCX_MONITOR m_Monitor2;
 
             std::unique_ptr<SwapChainProcessor> m_ProcessingThread;
 
