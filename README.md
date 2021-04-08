@@ -1,3 +1,4 @@
+License MIT -- Use it
 # Indirect Display Driver Sample #
 
 This is a sample driver that shows how to create a Windows Indirect Display Driver using the IddCx class extension driver.
