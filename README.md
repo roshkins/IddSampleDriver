@@ -1,5 +1,6 @@
 License MIT -- Use it
 
+AS IS - NO IMPLICIT OR EXPLICIT warranty This may break your computer, it didn't break mine. 
 Check out the latest release to download
 
 # Indirect Display Driver Sample #
