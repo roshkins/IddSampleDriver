@@ -241,7 +241,7 @@ void SwapChainProcessor::Run()
     // For improved performance, make use of the Multimedia Class Scheduler Service, which will intelligently
     // prioritize this thread for improved throughput in high CPU-load scenarios.
     DWORD AvTask = 0;
-    HANDLE AvTaskHandle = AvSetMmThreadCharacteristics(L"Distribution", &AvTask);
+    HANDLE AvTaskHandle = AvSetMmThreadCharacteristicsW(L"Distribution", &AvTask);
 
     RunCore();
 
@@ -385,6 +385,24 @@ const DISPLAYCONFIG_VIDEO_SIGNAL_INFO IndirectDeviceContext::s_KnownMonitorModes
     { { 255, 0 }},                                   // video standard and vsync divider
     DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
 },
+{
+      229009 * KHZ,                                      // pixel clock rate [Hz]
+    { 229009 * KHZ, 2560 + 40 },                         // fractional horizontal refresh rate [Hz]
+    { 229009 * KHZ, (2560 + 40) * (1440 + 28) },          // fractional vertical refresh rate [Hz]
+    { 2560, 1440 },                                    // (horizontal, vertical) active pixel resolution
+    { 2560 + 40, 1440 + 28 },                         // (horizontal, vertical) total pixel resolution
+    { { 255, 0 }},                                   // video standard and vsync divider
+    DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
+},
+{
+      509367 * KHZ,                                      // pixel clock rate [Hz]
+    { 509367 * KHZ, 3840 + 40 },                         // fractional horizontal refresh rate [Hz]
+    { 509367 * KHZ, (3840 + 40) * (2160 + 28) },          // fractional vertical refresh rate [Hz]
+    { 3840, 2160 },                                    // (horizontal, vertical) active pixel resolution
+    { 3840 + 40, 2160 + 28 },                         // (horizontal, vertical) total pixel resolution
+    { { 255, 0 }},                                   // video standard and vsync divider
+    DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
+},
 };
 
 // This is a sample monitor EDID - FOR SAMPLE PURPOSES ONLY
@@ -418,7 +436,7 @@ IndirectDeviceContext::~IndirectDeviceContext()
     m_ProcessingThread.reset();
 }
 
-#define NUM_VIRTUAL_DISPLAYS 5
+#define NUM_VIRTUAL_DISPLAYS 1
 
 void IndirectDeviceContext::InitAdapter()
 {
@@ -672,16 +690,18 @@ NTSTATUS IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject, const IDARG_IN_
 {
     UNREFERENCED_PARAMETER(MonitorObject);
 
-    vector<IDDCX_TARGET_MODE> TargetModes(4);
+    vector<IDDCX_TARGET_MODE> TargetModes(6);
 
     // Create a set of modes supported for frame processing and scan-out. These are typically not based on the
     // monitor's descriptor and instead are based on the static processing capability of the device. The OS will
     // report the available set of modes for a given output as the intersection of monitor modes with target modes.
 
-    CreateTargetMode(TargetModes[0], 1920, 1080, 60);
-    CreateTargetMode(TargetModes[1], 1024, 768, 60);
-    CreateTargetMode(TargetModes[2], 800, 600, 60);
-    CreateTargetMode(TargetModes[3], 640, 480, 60);
+    CreateTargetMode(TargetModes[0], 3840, 2160, 60);
+    CreateTargetMode(TargetModes[1], 2560, 1440, 60);
+    CreateTargetMode(TargetModes[2], 1920, 1080, 60);
+    CreateTargetMode(TargetModes[3], 1024, 768, 60);
+    CreateTargetMode(TargetModes[4], 800, 600, 60);
+    CreateTargetMode(TargetModes[5], 640, 480, 60);
 
     pOutArgs->TargetModeBufferOutputCount = (UINT)TargetModes.size();
 
