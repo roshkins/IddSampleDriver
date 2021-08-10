@@ -352,9 +352,31 @@ void SwapChainProcessor::RunCore()
 const UINT64 MHZ = 1000000;
 const UINT64 KHZ = 1000;
 
+constexpr DISPLAYCONFIG_VIDEO_SIGNAL_INFO dispinfo(UINT32 h, UINT32 v) {
+    const UINT32 clock_rate = 60 * (v + 4) * (v + 4) + 1000;
+    return {
+      clock_rate,                                      // pixel clock rate [Hz]
+    { clock_rate, v + 4 },                         // fractional horizontal refresh rate [Hz]
+    { clock_rate, (v + 4) * (v + 4) },          // fractional vertical refresh rate [Hz]
+    { h, v },                                    // (horizontal, vertical) active pixel resolution
+    { h + 4, v + 4 },                         // (horizontal, vertical) total pixel resolution
+    { { 255, 0 }},                                   // video standard and vsync divider
+    DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
+    };
+}
 // A list of modes exposed by the sample monitor EDID - FOR SAMPLE PURPOSES ONLY
 const DISPLAYCONFIG_VIDEO_SIGNAL_INFO IndirectDeviceContext::s_KnownMonitorModes[] =
 {
+    // 640 x 480 @ 60Hz
+    {
+          25249 * KHZ,                                   // pixel clock rate [Hz]
+        { 25249 * KHZ, 640 + 160 },                      // fractional horizontal refresh rate [Hz]
+        { 25249 * KHZ, (640 + 160) * (480 + 46) },       // fractional vertical refresh rate [Hz]
+        { 640, 480 },                                    // (horizontal, vertical) active pixel resolution
+        { 640 + 160, 480 + 46 },                         // (horizontal, vertical) blanking pixel resolution
+        { { 255, 0 } },                                  // video standard and vsync divider
+        DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
+    },
     // 800 x 600 @ 60Hz
     {
           40 * MHZ,                                      // pixel clock rate [Hz]
@@ -365,17 +387,7 @@ const DISPLAYCONFIG_VIDEO_SIGNAL_INFO IndirectDeviceContext::s_KnownMonitorModes
         { { 255, 0 }},                                   // video standard and vsync divider
         DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
     },
-    // 640 x 480 @ 60Hz
-    {
-          25175 * KHZ,                                   // pixel clock rate [Hz]
-        { 25175 * KHZ, 640 + 160 },                      // fractional horizontal refresh rate [Hz]
-        { 25175 * KHZ, (640 + 160) * (480 + 46) },       // fractional vertical refresh rate [Hz]
-        { 640, 480 },                                    // (horizontal, vertical) active pixel resolution
-        { 640 + 160, 480 + 46 },                         // (horizontal, vertical) blanking pixel resolution
-        { { 255, 0 } },                                  // video standard and vsync divider
-        DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
-    },
-    // 800 x 600 @ 60Hz
+    // 1920 x 1280 @ 60Hz
 {
       40 * MHZ,                                      // pixel clock rate [Hz]
     { 40 * MHZ, 800 + 256 },                         // fractional horizontal refresh rate [Hz]
@@ -385,24 +397,22 @@ const DISPLAYCONFIG_VIDEO_SIGNAL_INFO IndirectDeviceContext::s_KnownMonitorModes
     { { 255, 0 }},                                   // video standard and vsync divider
     DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
 },
-{
-      229009 * KHZ,                                      // pixel clock rate [Hz]
-    { 229009 * KHZ, 2560 + 40 },                         // fractional horizontal refresh rate [Hz]
-    { 229009 * KHZ, (2560 + 40) * (1440 + 28) },          // fractional vertical refresh rate [Hz]
-    { 2560, 1440 },                                    // (horizontal, vertical) active pixel resolution
-    { 2560 + 40, 1440 + 28 },                         // (horizontal, vertical) total pixel resolution
-    { { 255, 0 }},                                   // video standard and vsync divider
-    DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
-},
-{
-      509367 * KHZ,                                      // pixel clock rate [Hz]
-    { 509367 * KHZ, 3840 + 40 },                         // fractional horizontal refresh rate [Hz]
-    { 509367 * KHZ, (3840 + 40) * (2160 + 28) },          // fractional vertical refresh rate [Hz]
-    { 3840, 2160 },                                    // (horizontal, vertical) active pixel resolution
-    { 3840 + 40, 2160 + 28 },                         // (horizontal, vertical) total pixel resolution
-    { { 255, 0 }},                                   // video standard and vsync divider
-    DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE
-},
+dispinfo(1920, 1200),
+dispinfo(1920, 1440),
+dispinfo(2560, 1440),
+dispinfo(2560, 1600),
+dispinfo(2880, 1620),
+dispinfo(2880, 1800),
+dispinfo(3008, 1692),
+dispinfo(3200, 1800),
+dispinfo(3200, 2400),
+dispinfo(3840, 2160),
+dispinfo(3840, 2400),
+dispinfo(4096, 2304),
+dispinfo(4096, 2560),
+dispinfo(5120, 2880),
+dispinfo(6016, 3384),
+dispinfo(7680, 4320),
 };
 
 // This is a sample monitor EDID - FOR SAMPLE PURPOSES ONLY
@@ -423,7 +433,7 @@ const BYTE IndirectDeviceContext::s_KnownMonitorEdid[] =
     0x75, 0x78, 0x20, 0x23, 0x30, 0x0A, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0xFD, 0x00, 0x3B,
     0x3D, 0x42, 0x44, 0x0F, 0x00, 0x0A, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0xFC,
     0x00, 0x4C, 0x69, 0x6E, 0x75, 0x78, 0x20, 0x46, 0x48, 0x44, 0x0A, 0x20, 0x20, 0x20, 0x00, 0x05
-
+    
 };
 
 IndirectDeviceContext::IndirectDeviceContext(_In_ WDFDEVICE WdfDevice) :
@@ -446,16 +456,16 @@ void IndirectDeviceContext::InitAdapter()
     //
     // This is also where static per-adapter capabilities are determined.
     // ==============================
-
+    
     IDDCX_ADAPTER_CAPS AdapterCaps = {};
     AdapterCaps.Size = sizeof(AdapterCaps);
-
+    
     // Declare basic feature support for the adapter (required)
     AdapterCaps.MaxMonitorsSupported = NUM_VIRTUAL_DISPLAYS;
     AdapterCaps.EndPointDiagnostics.Size = sizeof(AdapterCaps.EndPointDiagnostics);
     AdapterCaps.EndPointDiagnostics.GammaSupport = IDDCX_FEATURE_IMPLEMENTATION_NONE;
     AdapterCaps.EndPointDiagnostics.TransmissionType = IDDCX_TRANSMISSION_TYPE_WIRED_OTHER;
-
+    
     // Declare your device strings for telemetry (required)
     AdapterCaps.EndPointDiagnostics.pEndPointFriendlyName = L"IddSample Device";
     AdapterCaps.EndPointDiagnostics.pEndPointManufacturerName = L"Microsoft";
@@ -690,18 +700,48 @@ NTSTATUS IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject, const IDARG_IN_
 {
     UNREFERENCED_PARAMETER(MonitorObject);
 
-    vector<IDDCX_TARGET_MODE> TargetModes(6);
+    vector<IDDCX_TARGET_MODE> TargetModes(34);
 
     // Create a set of modes supported for frame processing and scan-out. These are typically not based on the
     // monitor's descriptor and instead are based on the static processing capability of the device. The OS will
     // report the available set of modes for a given output as the intersection of monitor modes with target modes.
 
-    CreateTargetMode(TargetModes[0], 3840, 2160, 60);
-    CreateTargetMode(TargetModes[1], 2560, 1440, 60);
-    CreateTargetMode(TargetModes[2], 1920, 1080, 60);
-    CreateTargetMode(TargetModes[3], 1024, 768, 60);
-    CreateTargetMode(TargetModes[4], 800, 600, 60);
-    CreateTargetMode(TargetModes[5], 640, 480, 60);
+
+    CreateTargetMode(TargetModes[0], 7680, 4320, 60);
+    CreateTargetMode(TargetModes[1], 6016, 3384, 60);
+    CreateTargetMode(TargetModes[2], 5120, 2880, 60);
+    CreateTargetMode(TargetModes[3], 4096, 2560, 60);
+    CreateTargetMode(TargetModes[4], 4096, 2304, 60);
+    CreateTargetMode(TargetModes[5], 3840, 2400, 60);
+    CreateTargetMode(TargetModes[6], 3840, 2160, 60);
+    CreateTargetMode(TargetModes[7], 3200, 2400, 60);
+    CreateTargetMode(TargetModes[8], 3200, 1800, 60);
+    CreateTargetMode(TargetModes[9], 3008, 1692, 60);
+    CreateTargetMode(TargetModes[10], 2880, 1800, 60);
+    CreateTargetMode(TargetModes[11], 2880, 1620, 60);
+    CreateTargetMode(TargetModes[12], 2560, 1600, 60);
+    CreateTargetMode(TargetModes[13], 2560, 1440, 60);
+    CreateTargetMode(TargetModes[14], 1920, 1440, 60);
+    CreateTargetMode(TargetModes[15], 1920, 1200, 60);
+
+    CreateTargetMode(TargetModes[16], 1920, 1080, 60);
+    CreateTargetMode(TargetModes[17], 1600, 1024, 60);
+    CreateTargetMode(TargetModes[18], 1680, 1050, 60);
+    CreateTargetMode(TargetModes[19], 1600, 900, 60);
+    CreateTargetMode(TargetModes[20], 1440, 900, 60);
+    CreateTargetMode(TargetModes[21], 1400, 1050, 60);
+    CreateTargetMode(TargetModes[22], 1366, 768, 60);
+    CreateTargetMode(TargetModes[23], 1360, 768, 60);
+    CreateTargetMode(TargetModes[24], 1280, 1024, 60);
+    CreateTargetMode(TargetModes[25], 1280, 960, 60);
+    CreateTargetMode(TargetModes[26], 1280, 800, 60);
+    CreateTargetMode(TargetModes[27], 1280, 768, 60);
+    CreateTargetMode(TargetModes[28], 1280, 720, 60);
+    CreateTargetMode(TargetModes[29], 1280, 600, 60);
+    CreateTargetMode(TargetModes[30], 1152, 864, 60);
+    CreateTargetMode(TargetModes[31], 1024, 768, 60);
+    CreateTargetMode(TargetModes[32], 800, 600, 60);
+    CreateTargetMode(TargetModes[33], 640, 480, 60);
 
     pOutArgs->TargetModeBufferOutputCount = (UINT)TargetModes.size();
 
