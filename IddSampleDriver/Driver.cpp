@@ -399,6 +399,8 @@ const DISPLAYCONFIG_VIDEO_SIGNAL_INFO IndirectDeviceContext::s_KnownMonitorModes
 },
 dispinfo(1920, 1200),
 dispinfo(1920, 1440),
+dispinfo(2100, 900),
+dispinfo(2560, 1080),
 dispinfo(2560, 1440),
 dispinfo(2560, 1600),
 dispinfo(2880, 1620),
@@ -406,10 +408,12 @@ dispinfo(2880, 1800),
 dispinfo(3008, 1692),
 dispinfo(3200, 1800),
 dispinfo(3200, 2400),
+dispinfo(3440, 1440),
 dispinfo(3840, 2160),
 dispinfo(3840, 2400),
 dispinfo(4096, 2304),
 dispinfo(4096, 2560),
+dispinfo(5120, 2160),
 dispinfo(5120, 2880),
 dispinfo(6016, 3384),
 dispinfo(7680, 4320),
@@ -700,7 +704,7 @@ NTSTATUS IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject, const IDARG_IN_
 {
     UNREFERENCED_PARAMETER(MonitorObject);
 
-    vector<IDDCX_TARGET_MODE> TargetModes(34);
+    vector<IDDCX_TARGET_MODE> TargetModes(38);
 
     // Create a set of modes supported for frame processing and scan-out. These are typically not based on the
     // monitor's descriptor and instead are based on the static processing capability of the device. The OS will
@@ -710,38 +714,43 @@ NTSTATUS IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject, const IDARG_IN_
     CreateTargetMode(TargetModes[0], 7680, 4320, 60);
     CreateTargetMode(TargetModes[1], 6016, 3384, 60);
     CreateTargetMode(TargetModes[2], 5120, 2880, 60);
-    CreateTargetMode(TargetModes[3], 4096, 2560, 60);
-    CreateTargetMode(TargetModes[4], 4096, 2304, 60);
-    CreateTargetMode(TargetModes[5], 3840, 2400, 60);
-    CreateTargetMode(TargetModes[6], 3840, 2160, 60);
-    CreateTargetMode(TargetModes[7], 3200, 2400, 60);
-    CreateTargetMode(TargetModes[8], 3200, 1800, 60);
-    CreateTargetMode(TargetModes[9], 3008, 1692, 60);
-    CreateTargetMode(TargetModes[10], 2880, 1800, 60);
-    CreateTargetMode(TargetModes[11], 2880, 1620, 60);
-    CreateTargetMode(TargetModes[12], 2560, 1600, 60);
-    CreateTargetMode(TargetModes[13], 2560, 1440, 60);
-    CreateTargetMode(TargetModes[14], 1920, 1440, 60);
-    CreateTargetMode(TargetModes[15], 1920, 1200, 60);
+    CreateTargetMode(TargetModes[3], 5120, 2160, 60);
+    CreateTargetMode(TargetModes[4], 4096, 2560, 60);
+    CreateTargetMode(TargetModes[5], 4096, 2304, 60);
+    CreateTargetMode(TargetModes[6], 3840, 2400, 60);
+    CreateTargetMode(TargetModes[7], 3840, 2160, 60);
+    CreateTargetMode(TargetModes[8], 3440, 1440, 60);
+    CreateTargetMode(TargetModes[9], 3200, 2400, 60);
+    CreateTargetMode(TargetModes[10], 3200, 1800, 60);
+    CreateTargetMode(TargetModes[11], 3008, 1692, 60);
+    CreateTargetMode(TargetModes[12], 2880, 1800, 60);
+    CreateTargetMode(TargetModes[13], 2880, 1620, 60);
+    CreateTargetMode(TargetModes[14], 2560, 1600, 60);
+    CreateTargetMode(TargetModes[15], 2560, 1440, 60);
+    CreateTargetMode(TargetModes[16], 2560, 1080, 60);
+    CreateTargetMode(TargetModes[17], 2100, 900, 60);
+    CreateTargetMode(TargetModes[18], 1920, 1440, 60);
 
-    CreateTargetMode(TargetModes[16], 1920, 1080, 60);
-    CreateTargetMode(TargetModes[17], 1600, 1024, 60);
-    CreateTargetMode(TargetModes[18], 1680, 1050, 60);
-    CreateTargetMode(TargetModes[19], 1600, 900, 60);
-    CreateTargetMode(TargetModes[20], 1440, 900, 60);
-    CreateTargetMode(TargetModes[21], 1400, 1050, 60);
-    CreateTargetMode(TargetModes[22], 1366, 768, 60);
-    CreateTargetMode(TargetModes[23], 1360, 768, 60);
-    CreateTargetMode(TargetModes[24], 1280, 1024, 60);
-    CreateTargetMode(TargetModes[25], 1280, 960, 60);
-    CreateTargetMode(TargetModes[26], 1280, 800, 60);
-    CreateTargetMode(TargetModes[27], 1280, 768, 60);
-    CreateTargetMode(TargetModes[28], 1280, 720, 60);
-    CreateTargetMode(TargetModes[29], 1280, 600, 60);
-    CreateTargetMode(TargetModes[30], 1152, 864, 60);
-    CreateTargetMode(TargetModes[31], 1024, 768, 60);
-    CreateTargetMode(TargetModes[32], 800, 600, 60);
-    CreateTargetMode(TargetModes[33], 640, 480, 60);
+    CreateTargetMode(TargetModes[19], 1920, 1200, 60);
+    CreateTargetMode(TargetModes[20], 1920, 1080, 60);
+    CreateTargetMode(TargetModes[21], 1600, 1024, 60);
+    CreateTargetMode(TargetModes[22], 1680, 1050, 60);
+    CreateTargetMode(TargetModes[23], 1600, 900, 60);
+    CreateTargetMode(TargetModes[24], 1440, 900, 60);
+    CreateTargetMode(TargetModes[25], 1400, 1050, 60);
+    CreateTargetMode(TargetModes[26], 1366, 768, 60);
+    CreateTargetMode(TargetModes[27], 1360, 768, 60);
+    CreateTargetMode(TargetModes[28], 1280, 1024, 60);
+    CreateTargetMode(TargetModes[29], 1280, 960, 60);
+    CreateTargetMode(TargetModes[30], 1280, 800, 60);
+    CreateTargetMode(TargetModes[31], 1280, 768, 60);
+    CreateTargetMode(TargetModes[32], 1280, 720, 60);
+    CreateTargetMode(TargetModes[33], 1280, 600, 60);
+    CreateTargetMode(TargetModes[34], 1152, 864, 60);
+    CreateTargetMode(TargetModes[35], 1024, 768, 60);
+    CreateTargetMode(TargetModes[36], 800, 600, 60);
+
+    CreateTargetMode(TargetModes[37], 640, 480, 60);
 
     pOutArgs->TargetModeBufferOutputCount = (UINT)TargetModes.size();
 
