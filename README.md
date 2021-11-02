@@ -3,7 +3,7 @@ License MIT and CC0 or Public Domain, whichever is least restrictive -- Use it
 AS IS - NO IMPLICIT OR EXPLICIT warranty This may break your computer, it didn't break mine. It runs in User Mode which means it's less likely to cause system instability like the Blue Screen of Death.
 Check out the latest release to download, or find other versions below:
 
-https://github.com/ge9/IddSampleDriver/releases/tag/0.0.1.1
+https://github.com/ge9/IddSampleDriver/releases
 
 If you want me to build on this donate eth or similar here: 0xB01b6328F8Be53c852a54432bbEe630cE0Bd559a
 I now have a NEAR address: moopaloo.near
