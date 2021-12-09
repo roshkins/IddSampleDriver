@@ -5,7 +5,7 @@ Check out the latest release to download, or find other versions below:
 
 https://github.com/ge9/IddSampleDriver/releases
 
-If you want me to build on this donate eth or similar here: 0xB01b6328F8Be53c852a54432bbEe630cE0Bd559a
+If you want me to build on this donate eth or similar here: 0xfD010FF36f8212fb3e2485c8b6d54C7E884b6218
 I now have a NEAR address: moopaloo.near
 
 Thanks to https://github.com/akatrevorjay/edid-generator for the hi-res EDID.
